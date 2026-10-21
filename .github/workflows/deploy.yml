@@ -1,0 +1,70 @@
+name: Construire et déployer
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      deployer_ovh:
+        description: "Mettre aussi en ligne sur OVH (www.fsimon.fr)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  # 1) Aperçu sur GitHub Pages : https://florian78140.github.io/fsimon.fr/
+  apercu:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Construire le site (aperçu)
+        run: npm run build
+        env:
+          SITE_URL: https://florian78140.github.io
+          BASE_PATH: /fsimon.fr
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deploiement
+        uses: actions/deploy-pages@v4
+
+  # 2) Production sur OVH : uniquement en lançant le workflow à la main
+  #    (onglet Actions > Construire et déployer > Run workflow > cocher OVH)
+  ovh:
+    if: github.event_name == 'workflow_dispatch' && inputs.deployer_ovh
+    needs: apercu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Construire le site (production)
+        run: npm run build
+        env:
+          SITE_URL: https://www.fsimon.fr
+          BASE_PATH: /
+      - name: Envoyer sur OVH par FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_DIR }}
+          local-dir: ./dist/
