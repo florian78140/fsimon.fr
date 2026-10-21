@@ -1,5 +1,5 @@
 ---
-titre: fsimon.fr
+titre: Mon site personnel
 annee: "2026"
 tags: [Astro, GitHub Actions, CI/CD]
 lien: https://github.com/florian78140/fsimon.fr
