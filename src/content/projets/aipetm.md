@@ -1,5 +1,5 @@
 ---
-titre: aipetm.fr
+titre: AIPETM
 annee: "2026"
 tags: [WordPress, Refonte]
 lien: https://aipetm.fr
