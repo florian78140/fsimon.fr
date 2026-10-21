@@ -56,6 +56,7 @@ const host = (url) => new URL(url).hostname.replace(/^www\./, '');
             <h3>{data.titre}</h3>
             <p class="org">{data.organisation}{data.lieu && ` · ${data.lieu}`}</p>
             <Content />
+            {data.tags.length > 0 && <ul class="tags">{data.tags.map((t) => <li>{t}</li>)}</ul>}
           </li>
         ))}
       </ol>
