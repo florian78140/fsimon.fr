@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+const home = import.meta.env.BASE_URL;
+---
+<Base title="Page introuvable · fsimon" description="Cette page n'existe pas.">
+  <section class="hero">
+    <div class="container">
+      <p class="kicker">$ cd page-demandee<br />bash: cd: page-demandee: No such file or directory</p>
+      <h1>Erreur 404 : page introuvable.</h1>
+      <p class="lead">Cette page n'existe pas ou plus. Le site a été entièrement refait en 2026.</p>
+      <div class="btns">
+        <a class="btn btn-primary" href={home}>Retour à l'accueil</a>
+      </div>
+    </div>
+  </section>
+</Base>
