@@ -1,0 +1,67 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource/jetbrains-mono/500.css';
+import '@fontsource/jetbrains-mono/700.css';
+import '../styles/global.css';
+import Logo from '../components/Logo.astro';
+
+interface Props { title?: string; description?: string }
+const {
+  title = 'Florian Simon · Ingénieur développement & opérations',
+  description = "Florian Simon, ingénieur développement et opérations. Parcours, projets et engagements associatifs.",
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const home = `${base}/`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const year = new Date().getFullYear();
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={`${base}/favicon.ico`} sizes="any" />
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={`${base}/apple-touch-icon.png`} />
+    <link rel="manifest" href={`${base}/site.webmanifest`} />
+    <meta name="theme-color" content="#0F1E4A" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(`${base}/og-image.png`, Astro.site)} />
+  </head>
+  <body>
+    <a class="skip" href="#contenu">Aller au contenu</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href={home} aria-label="fsimon, accueil">
+          <Logo size={36} />
+          <span class="wordmark">fsimon<span class="cursor">_</span></span>
+        </a>
+        <nav aria-label="Navigation principale">
+          <a href={`${home}#parcours`}>Parcours</a>
+          <a href={`${home}#engagements`}>Engagements</a>
+          <a href={`${home}#projets`}>Projets</a>
+          <a class="nav-cta" href={`${home}#contact`}>Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="contenu">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <span class="mono">© {year} Florian Simon</span>
+        <span>Fait avec Astro, déployé par GitHub Actions</span>
+        <a href={`${base}/mentions-legales/`}>Mentions légales</a>
+      </div>
+    </footer>
+  </body>
+</html>
