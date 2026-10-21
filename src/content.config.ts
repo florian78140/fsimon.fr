@@ -8,7 +8,7 @@ const parcours = defineCollection({
     titre: z.string(),
     organisation: z.string(),
     lieu: z.string().optional(),
-    periode: z.string(),            // texte affiché, ex. « Juin 2016 – aujourd'hui »
+    periode: z.coerce.string(),            // texte affiché, ex. « Juin 2016 – aujourd'hui »
     type: z.enum(['pro', 'formation']),
     ordre: z.number(),              // plus grand = affiché en premier
     lien: z.string().url().optional(),
@@ -21,7 +21,7 @@ const engagements = defineCollection({
   schema: z.object({
     titre: z.string(),
     role: z.string(),
-    periode: z.string(),
+    periode: z.coerce.string(),
     ordre: z.number(),
     lien: z.string().url().optional(),
   }),
@@ -32,7 +32,7 @@ const projets = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projets' }),
   schema: z.object({
     titre: z.string(),
-    annee: z.string(),
+    annee: z.coerce.string(),
     tags: z.array(z.string()).default([]),
     lien: z.string().url().optional(),
     ordre: z.number(),
