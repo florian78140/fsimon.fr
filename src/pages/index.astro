@@ -1,0 +1,145 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+// ---- Informations de contact (à modifier ici) ----
+const email = 'florian.simon2@gmail.com';
+const liens = [
+  { nom: 'GitHub', url: 'https://github.com/florian78140' },
+  // { nom: 'LinkedIn', url: 'https://www.linkedin.com/in/...' },
+];
+
+const parDesc = (a, b) => b.data.ordre - a.data.ordre;
+const parcours = (await getCollection('parcours')).sort(parDesc);
+const pro = parcours.filter((p) => p.data.type === 'pro');
+const formation = parcours.filter((p) => p.data.type === 'formation');
+const engagements = (await getCollection('engagements')).sort(parDesc);
+const projets = (await getCollection('projets')).sort(parDesc);
+const projetsActuels = projets.filter((p) => !p.data.archive);
+const projetsArchives = projets.filter((p) => p.data.archive);
+
+const withContent = (list) => Promise.all(list.map(async (e) => ({ ...e, Content: (await render(e)).Content })));
+const proC = await withContent(pro);
+const formationC = await withContent(formation);
+const engagementsC = await withContent(engagements);
+const projetsC = await withContent(projetsActuels);
+const archivesC = await withContent(projetsArchives);
+const host = (url) => new URL(url).hostname.replace(/^www\./, '');
+---
+<Base>
+  <section class="hero">
+    <div class="container">
+      <p class="kicker">$ whoami</p>
+      <h1>Florian Simon, ingénieur développement &amp; opérations.</h1>
+      <p class="lead">
+        Ingénieur développement et opérations chez Dassault Systèmes depuis 2016.
+        À côté, je teste et présente des produits tech pour UX-Tech, je m'occupe de sites web
+        pour des associations, et je préside une association de parents d'élèves.
+      </p>
+      <div class="btns">
+        <a class="btn btn-primary" href="#parcours">Mon parcours</a>
+        <a class="btn btn-ghost" href="#contact">Me contacter</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="parcours" class="alt">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">~/parcours</p>
+        <h2>Parcours</h2>
+      </div>
+      <ol class="timeline">
+        {proC.map(({ data, Content }) => (
+          <li>
+            <span class="periode">{data.periode}</span>
+            <h3>{data.titre}</h3>
+            <p class="org">{data.organisation}{data.lieu && ` · ${data.lieu}`}</p>
+            <Content />
+          </li>
+        ))}
+      </ol>
+
+      <h3 class="subhead">Formation</h3>
+      <ol class="timeline">
+        {formationC.map(({ data, Content }) => (
+          <li>
+            <span class="periode">{data.periode}</span>
+            <h3>{data.titre}</h3>
+            <p class="org">{data.organisation}{data.lieu && ` · ${data.lieu}`}</p>
+            <Content />
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section id="engagements">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">~/engagements</p>
+        <h2>À côté du travail</h2>
+      </div>
+      <div class="grid">
+        {engagementsC.map(({ data, Content }) => (
+          <article class="card">
+            <span class="meta">{data.periode}</span>
+            <h3>{data.titre}</h3>
+            <p class="role">{data.role}</p>
+            <Content />
+            {data.lien && <a class="card-link" href={data.lien} rel="noopener">{host(data.lien)} →</a>}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="projets" class="alt">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">~/projets</p>
+        <h2>Projets &amp; sites réalisés</h2>
+      </div>
+      <div class="grid">
+        {projetsC.map(({ data, Content }) => (
+          <article class="card">
+            <span class="meta">{data.annee}</span>
+            <h3>{data.titre}</h3>
+            <Content />
+            <ul class="tags">{data.tags.map((t) => <li>{t}</li>)}</ul>
+            {data.lien && <a class="card-link" href={data.lien} rel="noopener">{host(data.lien)} →</a>}
+          </article>
+        ))}
+      </div>
+      {archivesC.length > 0 && (
+        <details class="archive">
+          <summary>Projets plus anciens</summary>
+          <div class="grid" style="margin-top:16px">
+            {archivesC.map(({ data, Content }) => (
+              <article class="card">
+                <span class="meta">{data.annee}</span>
+                <h3>{data.titre}</h3>
+                <Content />
+                <ul class="tags">{data.tags.map((t) => <li>{t}</li>)}</ul>
+              </article>
+            ))}
+          </div>
+        </details>
+      )}
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">~/contact</p>
+        <h2>Contact</h2>
+      </div>
+      <p class="muted">Une question, un projet ? Écrivez-moi.</p>
+      <div class="contact-box">
+        <a class="btn btn-primary" href={`mailto:${email}`}>{email}</a>
+        {liens.map((l) => <a class="btn btn-ghost" href={l.url} rel="noopener">{l.nom}</a>)}
+      </div>
+    </div>
+  </section>
+</Base>
