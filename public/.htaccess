@@ -1,0 +1,29 @@
+# fsimon.fr – configuration Apache (hébergement OVH)
+Options -Indexes
+ErrorDocument 404 /404.html
+
+RewriteEngine On
+
+# 1) fsimon.fr et floriansimon.fr -> https://www.fsimon.fr
+RewriteCond %{HTTP_HOST} ^fsimon\.fr$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^(www\.)?floriansimon\.fr$ [NC]
+RewriteRule ^(.*)$ https://www.fsimon.fr/$1 [R=301,L]
+
+# 2) Forcer le HTTPS sur www.fsimon.fr
+RewriteCond %{HTTP_HOST} ^www\.fsimon\.fr$ [NC]
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://www.fsimon.fr/$1 [R=301,L]
+
+# 3) Anciennes adresses du site (avant 2026)
+RewriteRule ^(home|accueil)/?$ / [R=301,L]
+RewriteRule ^about/?$ /#parcours [R=301,NE,L]
+RewriteRule ^work/?$ /#projets [R=301,NE,L]
+RewriteRule ^contact/?$ /#contact [R=301,NE,L]
+RewriteRule ^links/?$ / [R=301,L]
+
+# 4) Cache long pour les fichiers générés par Astro (noms uniques)
+<IfModule mod_headers.c>
+  <If "%{REQUEST_URI} =~ m#^/_astro/#">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </If>
+</IfModule>
