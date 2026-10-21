@@ -12,6 +12,7 @@ const parcours = defineCollection({
     type: z.enum(['pro', 'formation']),
     ordre: z.number(),              // plus grand = affiché en premier
     lien: z.string().url().optional(),
+    tags: z.array(z.string()).default([]),
   }),
 });
 
